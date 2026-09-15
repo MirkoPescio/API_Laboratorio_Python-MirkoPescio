@@ -7,6 +7,7 @@ class VentaCrear(BaseModel):
     id_producto: int
     cantidad: int
 
+
 class VentaRespuesta(BaseModel):
     id: int
     fecha: date
@@ -14,6 +15,8 @@ class VentaRespuesta(BaseModel):
     id_producto: int
     cantidad: int
     precio_total: float
+
+# Otro schema que coincide con las salidas que pide el PDF
 
 class VentaRespuestaDetallado(BaseModel):
     id: int

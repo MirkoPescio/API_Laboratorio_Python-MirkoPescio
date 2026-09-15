@@ -11,22 +11,22 @@ from schemas.venta_schema import VentaCrear, VentaRespuesta, VentaRespuestaDetal
 router = APIRouter(prefix="/ventas", tags=["ventas"])
 
 
-@router.get("/", response_model=list[VentaRespuesta])
+@router.get("/", status_code=200, response_model=list[VentaRespuesta])
 def route_get_ventas(db: Session = Depends(get_db)):
     return get_ventas(db)
 
-@router.get("/{venta_id}", response_model=VentaRespuestaDetallado)
+@router.get("/{venta_id}", status_code=200, response_model=VentaRespuestaDetallado)
 def route_get_venta(venta_id: int, db: Session = Depends(get_db)):
     venta = get_venta(venta_id, db)
     if not venta:
         raise HTTPException(status_code = 404, detail="Venta no encontrada")
     return venta
 
-@router.post("/", response_model=VentaRespuesta)
+@router.post("/", status_code=201, response_model=VentaRespuesta)
 def route_post_venta(venta: VentaCrear, db: Session = Depends(get_db)):
     return post_venta(db, venta)
 
-@router.delete("/{venta_id}", response_model=VentaRespuesta)
+@router.delete("/{venta_id}", status_code=200, response_model=VentaRespuesta)
 def route_delete_venta(venta_id: int, db: Session = Depends(get_db)):
     venta = delete_venta(db, venta_id)
     if not venta:
