@@ -20,29 +20,29 @@ def get_db():
         db.close()
 
 
-@router.get("/", response_model=list[ProductoRespuesta])
+@router.get("/", status_code=200, response_model=list[ProductoRespuesta])
 def route_get_productos(db: Session = Depends(get_db)):
     return get_productos(db)
 
-@router.get("/{producto_id}", response_model=ProductoRespuesta)
+@router.get("/{producto_id}", status_code=200, response_model=ProductoRespuesta)
 def route_get_producto(producto_id, db: Session = Depends(get_db)):
     producto = get_producto(db, producto_id)
     if not producto:
         raise HTTPException(status_code=404, detail="Producto no encontrado")
     return producto
 
-@router.post("/", response_model=ProductoRespuesta)
+@router.post("/", status_code=201, response_model=ProductoRespuesta)
 def route_post_producto(producto: ProductoCrear, db: Session = Depends(get_db)):
     return post_producto(db, producto)
 
-@router.put("/{producto_id}", response_model=ProductoRespuesta)
+@router.put("/{producto_id}", status_code=200, response_model=ProductoRespuesta)
 def route_update_producto(producto_id: int, updated: ProductoCrear, db: Session = Depends(get_db)):
     producto = update_producto(db, producto_id, updated)
     if not producto:
         raise HTTPException(status_code=404, detail="No se encontró ningún producto con el ID indicado para actualizarlo")
     return producto
 
-@router.delete("/{producto_id}")
+@router.delete("/{producto_id}", status_code=200)
 def route_delete_producto(producto_id: int, db: Session = Depends(get_db)):
     producto = delete_producto(db, producto_id)
     if not producto:
