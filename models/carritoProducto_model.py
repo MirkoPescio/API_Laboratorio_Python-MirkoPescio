@@ -12,7 +12,6 @@ class CarritoProducto(Base):
     cantidad = Column(Integer, nullable = False)
 
     carrito = relationship("Carrito", back_populates="carritoProductos")
-
     producto = relationship("Producto")
     """
     Esta última línea de código es:

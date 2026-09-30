@@ -2,7 +2,10 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 
 from models.venta_model import Venta
+from models.carrito_model import Carrito
 from models.producto_model import Producto
+from models.carritoProducto_model import CarritoProducto
+
 from schemas.venta_schema import VentaCrear
 
 
@@ -13,18 +16,26 @@ def get_venta(venta_id: int, db: Session):
     return db.query(Venta).filter(Venta.id == venta_id).first()
 
 def post_venta(db: Session, venta: VentaCrear):
-    producto = db.query(Producto).filter(Producto.id == venta.id_producto).first()
-    if not producto:
+    carrito = db.query(Carrito).filter(Carrito.id == venta.id_carrito).first()
+    
+    if not carrito:
         return None
-
-    total = producto.precio * venta.cantidad
+    
+    if carrito.estado != "cerrado":
+        return None
+    
+    productos = db.query(CarritoProducto).filter(CarritoProducto.id_carrito == carrito.id).all()
+    
+    total = 0
+    for producto in productos:
+        productoCarrito = db.query(Producto).filter(Producto.id == producto.id_producto).first()
+        total += productoCarrito.precio * producto.cantidad
 
     nueva_venta = Venta(
-        fecha = datetime.now().date(),
-        hora = datetime.now().time(),
-        id_producto = venta.id_producto,
-        cantidad = venta.cantidad,
-        precio_total = total
+        fecha = venta.fecha,
+        hora = venta.hora,
+        id_carrito = carrito.id,
+        monto_total = total
     )
     db.add(nueva_venta)
     db.commit()

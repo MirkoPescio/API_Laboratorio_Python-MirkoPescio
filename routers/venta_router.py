@@ -28,7 +28,7 @@ def route_post_venta(venta: VentaCrear, db: Session = Depends(get_db)):
 
 @router.delete("/{venta_id}", status_code=200, response_model=VentaRespuesta)
 def route_delete_venta(venta_id: int, db: Session = Depends(get_db)):
-    venta = delete_venta(db, venta_id)
+    venta = delete_venta(venta_id, db)
     if not venta:
         raise HTTPException(status_code=404, detail="Venta no encontrada para eliminar")
     return venta

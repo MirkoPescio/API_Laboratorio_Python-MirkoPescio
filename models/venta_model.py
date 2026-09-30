@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Date, Time, ForeignKey
+from sqlalchemy import Column, Integer, Float, Date, Time, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
 from models.producto_model import Producto
@@ -14,8 +14,8 @@ class Venta(Base):
     )
     fecha = Column(Date, nullable = False)
     hora = Column(Time, nullable = False)
-    id_producto = Column(Integer, ForeignKey("productos.id"), nullable = False)
-    cantidad = Column(Integer, nullable = False)
-    precio_total = Column(Float, nullable = False)
+    id_carrito = Column(Integer, ForeignKey("carritos.id"), nullable = False)
+    monto_total = Column(Float, nullable = False)
 
-    producto = relationship("Producto")
+    carrito = relationship("Carrito")
+    
