@@ -22,20 +22,17 @@ def post_venta(db: Session, venta: VentaCrear):
         return None
     
     if carrito.estado != "cerrado":
-        return None
+        return "Carrito abierto"
     
-    productos = db.query(CarritoProducto).filter(CarritoProducto.id_carrito == carrito.id).all()
+    venta_existente = db.query(Venta).filter(Venta.id_carrito == venta.id_carrito).first()
     
-    total = 0
-    for producto in productos:
-        productoCarrito = db.query(Producto).filter(Producto.id == producto.id_producto).first()
-        total += productoCarrito.precio * producto.cantidad
-
+    if venta_existente:
+        return "Carrito con venta ya registrada"
+    
     nueva_venta = Venta(
         fecha = venta.fecha,
         hora = venta.hora,
         id_carrito = carrito.id,
-        monto_total = total
     )
     db.add(nueva_venta)
     db.commit()

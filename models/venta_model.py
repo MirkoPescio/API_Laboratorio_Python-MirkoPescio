@@ -15,7 +15,6 @@ class Venta(Base):
     fecha = Column(Date, nullable = False)
     hora = Column(Time, nullable = False)
     id_carrito = Column(Integer, ForeignKey("carritos.id"), nullable = False)
-    monto_total = Column(Float, nullable = False)
 
     carrito = relationship("Carrito")
     

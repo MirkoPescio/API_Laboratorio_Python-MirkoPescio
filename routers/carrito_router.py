@@ -35,6 +35,8 @@ def route_update_carrito(carrito_id: int, updated: CarritoCrear, db: Session = D
     carrito = update_carrito(carrito_id, updated, db)
     if not carrito:
         raise HTTPException(status_code = 404, detail = "Carrito no encontrado para actualizarse")
+    if carrito.estado == "cerrado":
+        raise HTTPException(status_code = 400, detail = "El carrito debe estar abierto para modificar productos")
     return carrito
 
 @router.delete("/{carrito_id}", response_model = CarritoRespuesta)

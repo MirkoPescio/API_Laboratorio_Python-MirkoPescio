@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from models.carrito_model import Carrito
 from models.producto_model import Producto
 from models.carritoProducto_model import CarritoProducto
+from models.venta_model import Venta
 from schemas.carritoProducto_schema import CarritoProductoCrear
 
 
@@ -14,9 +15,9 @@ def get_carritoProducto_por_carrito(id_carrito: int, db: Session):
 # Para obtener un registro específico (carrito + producto)
 def get_carritoProducto(id_carrito: int, id_producto: int, db: Session):
     return db.query(CarritoProducto).filter(
-            CarritoProducto.id_carrito == id_carrito,
-            CarritoProducto.id_producto == id_producto
-        ).first()
+        CarritoProducto.id_carrito == id_carrito,
+        CarritoProducto.id_producto == id_producto
+    ).first()
 
 # Agregar un producto a un carrito:
 def post_carritoProducto(id_carrito: int, id_producto: int, carritoProducto: CarritoProductoCrear, db: Session):
@@ -29,13 +30,18 @@ def post_carritoProducto(id_carrito: int, id_producto: int, carritoProducto: Car
     producto = db.query(Producto).filter(Producto.id == id_producto).first()
 
     if not producto:
-        return None
+        return "Producto inexistente"
 
     if carrito.estado == "cerrado":
         return None
 
     if carritoProducto.cantidad <= 0:
-        return None
+        return "Cantidad inválida"
+
+    # Para no modificar el carrito si se encuentra asociado a una venta:
+    venta = db.query(Venta).filter(Venta.id_carrito == id_carrito).first()
+    if venta:
+        return "Carrito con venta"
 
     carritoProducto_existente = get_carritoProducto(id_carrito, id_producto, db)
 
@@ -71,10 +77,15 @@ def delete_carritoProducto(id_carrito: int, id_producto: int, db: Session):
     if carrito.estado == "cerrado":
         return None
 
+    # Para no modificar el carrito si se encuentra asociado a una venta:
+    venta = db.query(Venta).filter(Venta.id_carrito == id_carrito).first()
+    if venta:
+        return "carrito con venta"
+
     carritoProducto = get_carritoProducto(id_carrito, id_producto, db)
 
     if not carritoProducto:
-        return None
+        return "Producto no encontrado en el carrito"
 
     db.delete(carritoProducto)
     db.commit()

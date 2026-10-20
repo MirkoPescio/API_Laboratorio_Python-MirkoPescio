@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from models.carrito_model import Carrito
+from models.venta_model import Venta
 from schemas.carrito_schema import CarritoCrear
 
 
@@ -27,6 +28,11 @@ def update_carrito(carrito_id: int, updated: CarritoCrear, db: Session):
     if not carrito:
         return None
 
+    # Para no modificar el carrito si se encuentra asociado a una venta:
+    venta = db.query(Venta).filter(Venta.id_carrito == carrito_id).first()
+    if venta:
+        return "Carrito con venta"
+
     # No se puede reabrir un carrito cerrado
     if carrito.estado == "cerrado" and updated.estado == "abierto":
         return None
@@ -34,12 +40,6 @@ def update_carrito(carrito_id: int, updated: CarritoCrear, db: Session):
     # Estado inválido
     if updated.estado not in ["abierto", "cerrado"]:
         return None
-
-    # Comentado para cuando tenga que agregar la instancia/validación de venta
-    """
-    if carrito.venta is not None:
-        return None
-    """
 
     carrito.estado = updated.estado
 
@@ -53,10 +53,10 @@ def delete_carrito(carrito_id: int, db: Session):
     if not carrito:
         return None
 
-    """
-    if carrito.venta is not None:
-        return None
-    """
+    # Para no modificar el carrito si se encuentra asociado a una venta:
+    venta = db.query(Venta).filter(Venta.id_carrito == carrito_id).first()
+    if venta:
+        return "Carrito con venta"
     
     for cp in carrito.carritoProductos:
         db.delete(cp)

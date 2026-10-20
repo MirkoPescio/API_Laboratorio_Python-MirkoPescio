@@ -13,7 +13,6 @@ class VentaRespuesta(BaseModel):
     fecha: date
     hora: time
     id_carrito: int
-    monto_total: float
 
 # Otro schema que coincide con las salidas que pide el PDF
 

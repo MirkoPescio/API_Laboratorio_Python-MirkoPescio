@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from models.producto_model import Producto
+from models.carritoProducto_model import CarritoProducto
 from schemas.producto_schema import ProductoCrear
 
 
@@ -34,7 +35,15 @@ def update_producto(db: Session, producto_id: int, updated: ProductoCrear):
 def delete_producto(db: Session, producto_id: int):
     producto = get_producto(db, producto_id)
     if not producto:
-        return None
+        return None # Router => 404
+
+    # Validación: ¿el producto está en algún carrito?
+    producto_en_carrito = db.query(CarritoProducto).filter(
+        CarritoProducto.id_producto == producto_id
+    ).first()
+
+    if producto_en_carrito:
+        return "Producto en Carrito"
 
     db.delete(producto)
     db.commit()
